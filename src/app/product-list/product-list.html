@@ -1,0 +1,123 @@
+<section class="product-list">
+  <header class="product-list__header">
+    <h1>Productos</h1>
+
+    @if (loading() && products().length === 0) {
+      <p class="product-list__count">Cargando catálogo…</p>
+    } @else {
+      <p class="product-list__count">
+        <strong>{{ total() }}</strong> productos
+        @if (searchTerm().trim()) {
+          · búsqueda <code>?q={{ searchTerm().trim() }}</code>
+        }
+        @if (selectedCategory() && !searchTerm().trim()) {
+          · categoría <code>{{ selectedCategory() }}</code>
+        }
+      </p>
+    }
+
+    <div class="product-list__filters">
+      <label class="product-list__search">
+        <span class="product-list__search-label">Búsqueda</span>
+        <input
+          type="search"
+          class="product-list__search-input"
+          placeholder="Ej. phone"
+          [disabled]="loading() && products().length === 0"
+          (input)="onSearchInput($event)"
+        />
+      </label>
+
+      <label class="product-list__category">
+        <span class="product-list__search-label">Categoría</span>
+        <select
+          class="product-list__category-select"
+          [disabled]="!!searchTerm().trim() || (loading() && products().length === 0)"
+          (change)="onCategoryChange($event)"
+        >
+          <option value="">Todas</option>
+          @for (category of categories(); track category) {
+            <option [value]="category">{{ category }}</option>
+          }
+        </select>
+        @if (searchTerm().trim()) {
+          <span class="product-list__category-hint">Desactivada mientras hay búsqueda activa</span>
+        }
+      </label>
+    </div>
+  </header>
+  
+  @if (loading()) {
+   <app-loader></app-loader>
+  } @else if (error()) {
+    <p class="product-list__status product-list__status--error">{{ error() }}</p>
+  } @else if (products().length === 0) {
+    <p class="product-list__empty">
+      @if (searchTerm().trim()) {
+        No hay resultados para «{{ searchTerm().trim() }}».
+      } @else {
+        No hay productos en esta página.
+      }
+    </p>
+  } @else {
+    <ul class="product-list__items">
+      @for (product of products(); track product.id) {
+        <li>
+          <a class="product-card" [routerLink]="['/products', product.id]">
+            <img
+              class="product-card__thumb"
+              [src]="product.thumbnail"
+              [alt]="product.title"
+              width="64"
+              height="64"
+              loading="lazy"
+            />
+            <div class="product-card__main">
+              <p class="product-card__category">{{ product.category }}</p>
+              <h2 class="product-card__name">{{ product.title }}</h2>
+              <p class="product-card__description">{{ product.description }}</p>
+            </div>
+            <div class="product-card__meta">
+              <span class="product-card__price">{{ product.price | currency: 'USD' }}</span>
+              <span
+                class="product-card__stock"
+                [class.product-card__stock--out]="product.stock === 0"
+              >
+                @if (product.stock === 0) {
+                  Sin stock
+                } @else {
+                  Stock: {{ product.stock }}
+                }
+              </span>
+            </div>
+          </a>
+        </li>
+      }
+    </ul>
+  }
+
+  @if (!error() && (products().length > 0 || skip() > 0)) {
+    <nav class="product-list__pagination" aria-label="Paginación de productos">
+      <button
+        type="button"
+        class="product-list__page-btn"
+        [disabled]="!canGoPrevious() || loading()"
+        (click)="goToPreviousPage()"
+      >
+        Anterior
+      </button>
+      <span class="product-list__page-info">
+        Página {{ currentPage() }} de {{ totalPages() }}
+        <span class="product-list__page-meta">({{ products().length }} de {{ total() }})</span>
+      </span>
+      <button
+        type="button"
+        class="product-list__page-btn"
+        [disabled]="!canGoNext() || loading()"
+        (click)="goToNextPage()"
+      >
+        Siguiente
+      </button>
+    </nav>
+  }
+</section>

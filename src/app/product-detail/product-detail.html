@@ -1,0 +1,80 @@
+<section class="product-detail">
+  <a routerLink="/" class="product-detail__back">← Volver al listado</a>
+
+  @if (loading()) {
+   <app-loader></app-loader>
+  } @else if (error()) {
+    <p class="product-detail__status product-detail__status--error">{{ error() }}</p>
+  } @else if (product(); as item) {
+    <article class="product-detail__card">
+      <div class="product-detail__gallery">
+        <img
+          class="product-detail__image"
+          [src]="item.thumbnail"
+          [alt]="item.title"
+          width="320"
+          height="320"
+        />
+        @if (item.images.length > 1) {
+          <ul class="product-detail__thumbs">
+            @for (image of item.images; track image) {
+              <li>
+                <img [src]="image" [alt]="item.title" width="72" height="72" loading="lazy" />
+              </li>
+            }
+          </ul>
+        }
+      </div>
+
+      <div class="product-detail__content">
+        <p class="product-detail__category">{{ item.category }}</p>
+        <h1 class="product-detail__title">{{ item.title }}</h1>
+        <p class="product-detail__brand">{{ item.brand }} · SKU {{ item.sku }}</p>
+
+        <div class="product-detail__pricing">
+          <span class="product-detail__price">{{ item.price | currency: 'USD' }}</span>
+          @if (item.discountPercentage > 0) {
+            <span class="product-detail__discount">−{{ item.discountPercentage | number: '1.0-1' }}%</span>
+          }
+        </div>
+
+        <p class="product-detail__rating">Valoración: {{ item.rating | number: '1.1-1' }} / 5</p>
+        <p
+          class="product-detail__stock"
+          [class.product-detail__stock--out]="item.stock === 0"
+        >
+          @if (item.stock === 0) {
+            Sin stock
+          } @else {
+            Stock: {{ item.stock }} · {{ item.availabilityStatus }}
+          }
+        </p>
+
+        <p class="product-detail__description">{{ item.description }}</p>
+
+        @if (item.tags.length) {
+          <ul class="product-detail__tags">
+            @for (tag of item.tags; track tag) {
+              <li>{{ tag }}</li>
+            }
+          </ul>
+        }
+
+        <dl class="product-detail__meta">
+          <div>
+            <dt>Envío</dt>
+            <dd>{{ item.shippingInformation }}</dd>
+          </div>
+          <div>
+            <dt>Garantía</dt>
+            <dd>{{ item.warrantyInformation }}</dd>
+          </div>
+          <div>
+            <dt>Devoluciones</dt>
+            <dd>{{ item.returnPolicy }}</dd>
+          </div>
+        </dl>
+      </div>
+    </article>
+  }
+</section>
