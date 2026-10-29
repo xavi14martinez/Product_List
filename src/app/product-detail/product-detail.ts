@@ -7,8 +7,12 @@ import { map } from 'rxjs/operators';
 import { ProductDetail as ProductDetailModel } from '../models/product';
 import { Loader } from '../loader/loader';
 
+/** API URL for the product detail */
 const API = 'https://dummyjson.com/products';
 
+/**
+ * Product detail component
+ */
 @Component({
   selector: 'app-product-detail',
   imports: [RouterLink, CurrencyPipe, DecimalPipe, Loader],
@@ -16,22 +20,27 @@ const API = 'https://dummyjson.com/products';
   styleUrl: './product-detail.css',
 })
 export class ProductDetail {
+  /** Route injector */
   private readonly route = inject(ActivatedRoute);
-
+  /** Product ID signal */
   private readonly productId = toSignal(
     this.route.paramMap.pipe(map((params) => params.get('id'))),
     { initialValue: null },
   );
 
+  /** Product resource */
   protected readonly productResource = httpResource<ProductDetailModel>(() => {
     const id = this.productId();
     return id ? `${API}/${id}` : undefined;
   });
 
+  /** Product signal */
   protected readonly product = computed(() =>
     this.productResource.hasValue() ? this.productResource.value() : null,
   );
+  /** Loading signal */
   protected readonly loading = computed(() => this.productResource.isLoading());
+  /** Error signal */
   protected readonly error = computed(() => {
     if (!this.productId()) {
       return 'Producto no encontrado.';

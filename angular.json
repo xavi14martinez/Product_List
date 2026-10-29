@@ -7,7 +7,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "prueba-uve": {
+    "product_list": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -55,10 +55,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "prueba-uve:build:production"
+              "buildTarget": "product_list:build:production"
             },
             "development": {
-              "buildTarget": "prueba-uve:build:development"
+              "buildTarget": "product_list:build:development"
             }
           },
           "defaultConfiguration": "development"
